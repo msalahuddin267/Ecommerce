@@ -1,10 +1,3 @@
-# Name the single Python image we're using everywhere.
-ARG python=python:3.10-slim
-
-# Build stage:
-FROM ${python} AS build
-
-# Install a full C toolchain and C build-time dependencies for
 # everything we're going to need.
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive \
@@ -35,6 +28,10 @@ RUN apt-get update \
 COPY --from=build /venv /venv
 ENV PATH=/venv/bin:$PATH
 
+WORKDIR /app
+
 # Copy the application in.
 COPY . .
-CMD ["./main.py"]
+
+ENTRYPOINT ["python3"]
+CMD ["manage.py", "runserver", "0.0.0.0:80"]
