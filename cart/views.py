@@ -3,6 +3,7 @@ from store.models import Product
 from .models import Cart, CartItem
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
+import socket
 
 
 def _cart_id(request):
@@ -102,11 +103,14 @@ def cart(request, total=0, quantity=0, cart_items=None):
     except ObjectDoesNotExist:
         pass
 
+    pod = socket.gethostname()
     context = {
         'total': total,
         'quantity': quantity,
         'cart_items': cart_items,
         'tax'       : tax,
         'grand_total': grand_total,
+        'pod': pod,
     }
+    
     return render(request, 'cart/cart.html', context)

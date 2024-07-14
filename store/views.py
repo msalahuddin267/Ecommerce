@@ -3,6 +3,7 @@ from . models import Product, ReviewRating
 from category.models import Category
 from django.core.paginator import Paginator
 from . forms import ReviewForm
+import socket
 
 def store(request, category_slug=None):
     if category_slug : 
@@ -21,14 +22,16 @@ def store(request, category_slug=None):
         print(paged_product.has_next(), paged_product.has_previous(), paged_product.previous_page_number, paged_product.next_page_number)
         
     categories = Category.objects.all()
-    context = {'products' : paged_product, 'categories' : categories, }
+    pod = socket.gethostname()
+    context = {'products' : paged_product, 'categories' : categories, 'pod':pod}
     return render(request, 'store/store.html', context)
 
 def product_detail(request, category_slug, product_slug):
     single_product = Product.objects.get(slug = product_slug, category__slug = category_slug)
     reviews = ReviewRating.objects.filter(product=single_product, status=True)
     print('single product ', single_product)
-    return render(request, 'store/product_detail.html', {'product' : single_product, 'reviews' : reviews})
+    pod = socket.gethostname()
+    return render(request, 'store/product_detail.html', {'product' : single_product, 'reviews' : reviews, 'pod':pod})
 
 
 def submit_review(request, product_id):
